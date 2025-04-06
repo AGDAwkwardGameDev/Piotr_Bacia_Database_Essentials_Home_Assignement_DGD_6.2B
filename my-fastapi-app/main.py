@@ -26,10 +26,10 @@ async def get_sprite(filename: str):
     return {"message": "Sprite not found"}
 @app.post("/upload_audio")
 async def upload_audio(file: UploadFile = File(...)):
- content = await file.read()
- audio_doc = {"filename": file.filename, "content": content}
- result = await db.audio.insert_one(audio_doc)
- return {"message": "Audio file uploaded", "id": str(result.inserted_id)}
+    content = await file.read()
+    audio_doc = {"filename": file.filename, "content": content}
+    result = await db.audio.insert_one(audio_doc)
+    return {"message": "Audio file uploaded", "id": str(result.inserted_id)}
 # Endpoint for retrieving an audio file
 @app.get("/get_audio/{filename}")
 async def get_audio(filename: str):
@@ -43,6 +43,8 @@ async def add_score(score: PlayerScore):
  score_doc = score.dict()
  result = await db.scores.insert_one(score_doc)
  return {"message": "Score recorded", "id": str(result.inserted_id)}
+
+
 # Endpoint for retrieving scores
 @app.get("/player_score/{player_name}")
 async def get_score(player_name: str):
