@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from pydantic import BaseModel, constr
+from pydantic import BaseModel
 from fastapi.params import Depends
 from dotenv import load_dotenv
 import motor.motor_asyncio
@@ -25,12 +25,12 @@ async def get_database():
 
 # Input validation for player scores
 class PlayerScore(BaseModel):
-    player_name: constr(regex=r"^[a-zA-Z0-9_]+$")  # Only alphanumeric characters and underscores allowed
+    player_name: str
     score: int
 
 @app.get("/")
 async def root():
-    return {"message": "You are conneted"}
+    return {"message": "You are connected"}
 
 @app.post("/upload_sprite")
 async def upload_sprite(file: UploadFile = File(...), db=Depends(get_database)):
@@ -66,7 +66,7 @@ async def get_audio(filename: str, db=Depends(get_database)):
 
 @app.post("/player_score")
 async def add_score(score: PlayerScore, db=Depends(get_database)):
-    score_doc = score.dict()  # Ensure sanitized inputs
+    score_doc = score.model_dump()  # Ensure sanitized inputs
     result = await db.scores.insert_one(score_doc)
     return {"message": "Score recorded", "id": str(result.inserted_id)}
 
